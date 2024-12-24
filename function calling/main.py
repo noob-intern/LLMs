@@ -176,12 +176,16 @@ langchain_app = workflow.compile(checkpointer=memory)
 if __name__ == "__main__":
     user_input = "Can you give me the specs for the Acoustica Deluxe?"
 
-    for chunk, metadata in langchain_app.stream(
-        {"messages": [HumanMessage(content=user_input)]},
-        thread_id="abc-123",
-        checkpoint_id="my-checkpoint",
-        checkpoint_ns="my-namespace",
-        stream_mode="messages"
-    ):
-        if isinstance(chunk, AIMessage):
-            print(chunk.content, end="", flush=True)
+    config = {
+        "configurable": {
+            "thread_id": "my-thread-abc123",
+            # "checkpoint_id": "some-checkpoint-id",
+            # "checkpoint_ns": "some-namespace",
+        }
+    }
+    
+    result = langchain_app.invoke({"messages": [HumanMessage(content=user_input)]}, config)
+
+    for msg in result.get("messages", []):
+        if isinstance(msg, AIMessage):
+            print(msg.content)
