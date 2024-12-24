@@ -78,23 +78,15 @@ model = ChatOpenAI(
 )
 
 
-SYSTEM_MESSAGE = """You are a friendly and knowledgeable customer service representative for Acoustica Guitars, a premium guitar manufacturer known for exceptional craftsmanship and customer care. You are here to assist customers with any questions they may have about the company's products, services, or policies.
-            
-            Here are the company details: 
-            - **Company Name**: Acoustica Guitars
-            - **Founded**: 1985
-            - **Specialties**: Custom electric guitars, acoustic guitars, and basses handcrafted from ethically sourced woods.
-            - **Unique Selling Points**:
-              - Lifetime warranty on all guitars.
-              - A wide range of customization options for body shape, neck profile, and finishes.
-              - Exclusive "ToneMaster Pickup Series" for superior sound quality.
-            - **Global Presence**: Retail stores in 20 countries and free worldwide shipping.
-            - **Customer Perks**: 
-              - Free annual guitar maintenance for loyal customers.
-              - Access to exclusive online tutorials and masterclasses by renowned musicians.
+SYSTEM_MESSAGE = """You are a friendly and knowledgeable customer service representative for Acoustica Guitars, 
+a premium guitar manufacturer. You have access to the entire conversation so far as context.
 
-            When users ask for anything, your goal is to exceed their expectations. Be polite, enthusiastic, and ready to provide detailed assistance about our guitars, services, or policies."""
-
+IMPORTANT GUIDELINES:
+- Do NOT repeat or copy-paste the entire previous conversation in your final output.
+- Do NOT repeat boilerplate text or disclaimers each time. 
+- Simply answer the user's latest question or request in a concise manner.
+- You may reference context from earlier in the conversation, but do so succinctly.
+"""
 
 prompt_template = ChatPromptTemplate.from_messages(
     [
@@ -174,7 +166,6 @@ langchain_app = workflow.compile(checkpointer=memory)
 
 if __name__ == "__main__":
     conversation = []
-    
     config = {
         "configurable": {
             "thread_id": "my-thread-abc123",
@@ -189,25 +180,25 @@ if __name__ == "__main__":
                 print("Goodbye!")
                 break
 
-            # Add the new user message to the conversation
+            # Add the user's message to the conversation
             conversation.append(HumanMessage(content=user_input))
 
-            # Invoke the LangChain app with our *entire* conversation
+            # Call the stateful app with the entire conversation
             result = langchain_app.invoke({"messages": conversation}, config=config)
 
-            # The result is a dict with "messages" as a list of either HumanMessage or AIMessage
+            # The result is a dict with {"messages": [...]}, each item is either AIMessage or HumanMessage
             ai_responses = []
             for msg in result.get("messages", []):
                 if isinstance(msg, AIMessage):
                     ai_responses.append(msg.content)
-                    # IMPORTANT: add the AIMessage to conversation so next turn has the context
+                    # IMPORTANT: append the AIMessage to conversation for the next turn
                     conversation.append(msg)
 
-            # Print the AI's final output(s)
-            for resp in ai_responses:
-                print(f"AI: {resp}")
-                
+            # Print the final AI response(s) for the user
+            print(f"AI: {ai_responses[-1]}")
+            # for resp in ai_responses:
+            #   print(f"AI: {resp}")
+
         except (KeyboardInterrupt, EOFError):
             print("\nExiting chat.")
             sys.exit(0)
-            
