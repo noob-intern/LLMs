@@ -61,7 +61,7 @@ prompt_template = ChatPromptTemplate.from_messages(
 )
 
 
-# --- TRIMMER EXAMPLE (OPTIONAL) ---
+
 trimmer = trim_messages(
     max_tokens=65,
     strategy="last",
