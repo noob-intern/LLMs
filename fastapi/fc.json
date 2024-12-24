@@ -1,0 +1,23 @@
+{
+    "name": "stream_handler",
+    "description": "Handles streaming responses from the compiled StateGraph app (langchain_app) based on user queries.",
+    "strict": true,
+    "parameters": {
+      "type": "object",
+      "required": [
+        "query",
+        "thread_id"
+      ],
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "The user's query for assistance."
+        },
+        "thread_id": {
+          "type": "string",
+          "description": "The unique identifier for the conversation thread."
+        }
+      },
+      "additionalProperties": false
+    }
+  }

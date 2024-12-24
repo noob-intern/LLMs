@@ -124,7 +124,7 @@ async def stream_handler(request_data: QueryRequest):
         if isinstance(chunk, AIMessage):
             response_content += chunk.content + " "
 
-        # Stop if 20 seconds have passed
+        # Stop if 300 seconds have passed
         if time.time() - start_time > 300:
             response_content += "\nStreaming ended after 300 seconds."
             break
