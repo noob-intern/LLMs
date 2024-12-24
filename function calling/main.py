@@ -71,9 +71,9 @@ openai_function_schemas = [
 
 model = ChatOpenAI(
     model="gpt-4-0613",
-    openai_functions=openai_function_schemas,
-    openai_function_call="auto",  # "auto": let the model decide if/when to call
-    temperature=0,  # for more deterministic output
+    functions=openai_function_schemas,
+    function_call="auto",
+    temperature=0
 )
 
 
@@ -174,9 +174,14 @@ langchain_app = workflow.compile(checkpointer=memory)
     demo
 """
 if __name__ == "__main__":
+    user_input = "Can you give me the specs for the Acoustica Deluxe?"
 
-    user_input = "Can you give me the specifications for the Acoustica Deluxe?"
-    initial_state = MessagesState(messages=[HumanMessage(content=user_input)])
-    result = langchain_app.run(initial_state)
-    final_msg = result["messages"][-1]
-    print("Assistant response:\n", final_msg.content)
+    for chunk, metadata in langchain_app.stream(
+        {"messages": [HumanMessage(content=user_input)]},
+        thread_id="abc-123",
+        checkpoint_id="my-checkpoint",
+        checkpoint_ns="my-namespace",
+        stream_mode="messages"
+    ):
+        if isinstance(chunk, AIMessage):
+            print(chunk.content, end="", flush=True)
