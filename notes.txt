@@ -1,5 +1,0 @@
-http://localhost:8888/notebooks/chatbot_test.ipynb
-
-
-https://python.langchain.com/docs/tutorials/chatbot/
-
